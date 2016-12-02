@@ -1,8 +1,7 @@
 package Twitter::API::Trait::InflateObjects;
 # ABSTRACT: Inflate hash refs, URLs, and timestamps to objects
 
-use 5.12.1;
-use strictures 2;
+use 5.14.1;
 use Moo::Role;
 use Hash::Objectify;
 use Data::Visitor::Callback;
@@ -37,10 +36,11 @@ has objectify_visitor => (
 );
 
 around inflate_response => sub {
-    my $orig = shift;
-    my $self = shift;
+    my ( $next, $self, $c ) = @_;
 
-    $self->objectify_hashes($self->$orig(@_));
+    $self->$next($c);
+    my $objectified = $self->objectify_hashes($c->result);
+    $c->set_result($objectified);
 };
 
 1;

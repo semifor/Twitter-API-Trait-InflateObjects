@@ -1,20 +1,20 @@
 #!/usr/bin/env perl
-use 5.12.1;
-use strictures 2;
+use 5.14.1;
+use warnings;
 use utf8;
 use open qw/:std :utf8/;
 
 use Twitter::API;
 
-my $api = Twitter::API->new(
-    traits => [ qw/ApiMethods InflateObjects WrapResult/ ],
+my $api = Twitter::API->new_with_traits(
+    traits => [ qw/ApiMethods InflateObjects/ ],
     consumer_key        => $ENV{CONSUMER_KEY},
     consumer_secret     => $ENV{CONSUMER_SECRET},
     access_token        => $ENV{ACCESS_TOKEN},
     access_token_secret => $ENV{ACCESS_TOKEN_SECRET},
 );
 
-my $r = $api->verify_credentials;
-say "${ \$r->result->screen_name } is authorized";
-say "Rate limit: ${ \$r->rate_limit }, remaining: ${ \$r->rate_limit_remaining }";
-
+my ( $r, $c ) = $api->verify_credentials;
+say sprintf '%s is authorized', $r->screen_name;
+say sprintf 'Rate limit: %s, remaining: %s',
+    $c->rate_limit, $c->rate_limit_remaining;
